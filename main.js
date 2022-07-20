@@ -6,13 +6,14 @@ const colorOptions = document.getElementsByName("color-option");
 
 let pickedColor = "";
 let colors = [
-  { name: "blue", value: "#00f" },
-  { name: "green", value: "#0f0" },
+  { name: "Blue", value: "#00f" },
+  { name: "Green", value: "#0f0" },
 ];
 
-ContentstackUIExtension.init().then(function (extension) {
+export function initialize(extension) {
   // make extension object globally available
-  extensionField = extension;
+
+  extensionField = extension ?? {};
 
   colors =
     extension?.config?.colors?.length > 0
@@ -21,17 +22,18 @@ ContentstackUIExtension.init().then(function (extension) {
 
   // Get current color field value from Contentstack and update the color picker input element
   pickedColor =
-    extension.field.getData() !== ""
-      ? extension.field.getData()
+    extension && extension.field?.getData() !== ""
+      ? extension?.field?.getData()
       : colors[0].value;
   buildColorList(pickedColor);
-});
+}
 
-function buildColorList(pickedColor) {
+export function buildColorList(pickedColor) {
   colors.forEach((color) => {
     const radioLabel = document.createElement("label");
     radioLabel.className = "radio-option-label";
     radioLabel.style.display = "flex";
+    radioLabel.style.paddingBottom = '5px';
 
     const radioInput = document.createElement("input");
     radioInput.type = "radio";
@@ -47,7 +49,7 @@ function buildColorList(pickedColor) {
 
     const colorSwatch = document.createElement("div");
     colorSwatch.className = "swatch";
-    colorSwatch.style.cssText = `background-color:${color.value};width:20px;height:20px;padding:0 4px 0 0`;
+    colorSwatch.style.cssText = `background-color:${color.value};width:20px;height:20px;padding:0 4px 0 0;`;
 
     radioLabel.appendChild(radioInput);
     radioLabel.appendChild(radioSpan);
@@ -55,9 +57,11 @@ function buildColorList(pickedColor) {
     form.appendChild(radioLabel);
   });
 }
+initialize();
+ContentstackUIExtension.init().then(initialize(extension));
 
 // On color change event, pass new value to Contentstack
-function updateColor() {
+export function updateColor() {
   let selectedColor = "";
 
   for (let i = 0; i < colorOptions.length; i++) {

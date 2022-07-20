@@ -1,0 +1,6 @@
+#palette {
+  display: flex;
+}
+.radio-option-label {
+  padding-left: 10px;
+}
